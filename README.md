@@ -1,2 +1,4 @@
 # Unnamed-Game
-A small passion project
+Just a silly project for the summer.
+
+:3
