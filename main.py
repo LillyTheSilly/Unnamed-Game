@@ -21,15 +21,6 @@ def draw_grid():
         pygame.draw.line(screen, (255, 255, 255), (0, line * tile_size), (screen_width, line * tile_size))
         pygame.draw.line(screen, (255, 255, 255), (line * tile_size, 0), (line * tile_size, screen_height))
 
-
-world_data =
-
-[1, 1, 1, 1, 1]
-
-
-
-
-
 run =True
 while run:
 
