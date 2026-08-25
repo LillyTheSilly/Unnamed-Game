@@ -4,7 +4,6 @@ from pygame import mixer
 import pickle
 from os import path
 
-
 pygame.mixer.pre_init(44100, -16, 2, 512)
 mixer.init()
 pygame.font.init()
@@ -20,11 +19,48 @@ pygame.display.set_caption("Platformer")
 
 #define game variables
 tile_size = 50
+game_over = 0
+main_menu = True
 level = 1
 
 #load images
 sun_img = pygame.image.load("assets/img/sun.png")
 bg_img = pygame.image.load("assets/img/sky.png")
+restart_img = pygame.image.load("assets/img/restart_btn.png")
+start_img = pygame.image.load("assets/img/start_btn.png")
+exit_img = pygame.image.load("assets/img/exit_btn.png")
+lava_img = pygame.image.load("assets/img/lava.png")
+blob_img = pygame.image.load("assets/img/blob.png")
+coin_img = pygame.image.load("assets/img/coin.png")
+
+
+class Button():
+    def __init__(self, x, y, image):
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.clicked = False
+
+    def draw(self):
+        action = False
+
+        #get mouse position
+        pos = pygame.mouse.get_pos()
+
+        #check for clicks
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                action = True
+            self.clicked = True
+
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.clicked = False
+
+        #draw button
+        screen.blit(self.image, self.rect)
+
+        return action
 
 
 #load sounds
@@ -146,6 +182,13 @@ class World():
                     img_rect.y = row_count * tile_size
                     tile = (img, img_rect)
                     self.tile_list.append(tile)
+                if tile == 3:
+                    img = pygame.transform.scale(exit_img, (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * tile_size
+                    img_rect.y = row_count * tile_size
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
                 col_count += 1
             row_count += 1
 
@@ -164,11 +207,22 @@ def draw(self):
     for tile in self.tile_list:
         screen.blit(tile[0], tile[1])
 
+class Exit():
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        img = pygame.image.load("assets/img/exit.png")
+        self.image = pygame.transform.scale(img, (tile_size, tile_size // 2))
+        self.rect = self.image.get_rect()
 
 player = Player(100, screen_height - 130)
 
+restart_button = Button(screen_width // 2 - 50, screen_height // 2 + 100, restart_img)
+start_button = Button(screen_width // 2 - 350, screen_height // 2, start_img)
+exit_button = Button(screen_width // 2 + 150, screen_height // 2, exit_img)
 
-run =True
+
+#main game loop
+run = True
 while run:
 
     clock.tick(fps)
@@ -176,13 +230,19 @@ while run:
     screen.blit(bg_img, (0,0))
     screen.blit(sun_img,(100, 100))
 
-    world.draw()
-    player.update()
+    if main_menu:
+        if exit_button.draw():
+            run = False
+        if start_button.draw():
+            main_menu = False
+    else:
+        world.draw()
+        player.update()
 
     #event handler
     for event in pygame.event.get():
         if event.type == QUIT:
-                    run = False
+            run = False
 
     pygame.display.update()
 
