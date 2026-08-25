@@ -63,7 +63,7 @@ for tile in range(0, MAX_COLS):
     world_data[ROWS - 1][tile] = 0
 
 
-# function for outputting text onto the screen
+# function for putting text onto the screen
 def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
     screen.blit(img, (x, y))
